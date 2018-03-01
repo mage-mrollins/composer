@@ -378,7 +378,7 @@ class AutoloadGeneratorTest extends TestCase
 
         $this->generator->dump($this->config, $this->repository, $package, $this->im, 'composer', false, '_5');
         $this->assertAutoloadFiles('vendors', $this->vendorDir.'/composer');
-        $this->assertTrue(file_exists($this->vendorDir.'/composer/autoload_classmap.php'), "ClassMap file needs to be generated, even if empty.");
+        $this->assertFileExists($this->vendorDir.'/composer/autoload_classmap.php', "ClassMap file needs to be generated, even if empty.");
     }
 
     public function testPSRToClassMapIgnoresNonExistingDir()
@@ -395,7 +395,7 @@ class AutoloadGeneratorTest extends TestCase
             ->will($this->returnValue(array()));
 
         $this->generator->dump($this->config, $this->repository, $package, $this->im, 'composer', true, '_8');
-        $this->assertTrue(file_exists($this->vendorDir.'/composer/autoload_classmap.php'), "ClassMap file needs to be generated.");
+        $this->assertFileExists($this->vendorDir.'/composer/autoload_classmap.php', "ClassMap file needs to be generated.");
         $this->assertEquals(
             array(),
             include $this->vendorDir.'/composer/autoload_classmap.php'
@@ -425,7 +425,7 @@ class AutoloadGeneratorTest extends TestCase
         file_put_contents($this->vendorDir.'/b/b/lib/c.php', '<?php class ClassMapBaz {}');
 
         $this->generator->dump($this->config, $this->repository, $package, $this->im, 'composer', false, '_6');
-        $this->assertTrue(file_exists($this->vendorDir.'/composer/autoload_classmap.php'), "ClassMap file needs to be generated.");
+        $this->assertFileExists($this->vendorDir.'/composer/autoload_classmap.php', "ClassMap file needs to be generated.");
         $this->assertEquals(
             array(
                 'ClassMapBar' => $this->vendorDir.'/b/b/src/b.php',
@@ -461,7 +461,7 @@ class AutoloadGeneratorTest extends TestCase
         file_put_contents($this->vendorDir.'/b/b/src/c.php', '<?php class ClassMapBaz {}');
 
         $this->generator->dump($this->config, $this->repository, $package, $this->im, 'composer', false, '_6');
-        $this->assertTrue(file_exists($this->vendorDir.'/composer/autoload_classmap.php'), "ClassMap file needs to be generated.");
+        $this->assertFileExists($this->vendorDir.'/composer/autoload_classmap.php', "ClassMap file needs to be generated.");
         $this->assertEquals(
             array(
                 'ClassMapBar' => $this->vendorDir.'/a/a/target/lib/b.php',
@@ -497,7 +497,7 @@ class AutoloadGeneratorTest extends TestCase
         file_put_contents($this->vendorDir.'/c/c/foo/test.php', '<?php class ClassMapBaz {}');
 
         $this->generator->dump($this->config, $this->repository, $package, $this->im, 'composer', false, '_7');
-        $this->assertTrue(file_exists($this->vendorDir.'/composer/autoload_classmap.php'), "ClassMap file needs to be generated.");
+        $this->assertFileExists($this->vendorDir.'/composer/autoload_classmap.php', "ClassMap file needs to be generated.");
         $this->assertEquals(
             array(
                 'ClassMapBar' => $this->vendorDir.'/b/b/test.php',
@@ -539,7 +539,7 @@ class AutoloadGeneratorTest extends TestCase
         $this->generator->setApcu(true);
         $this->generator->dump($this->config, $this->repository, $package, $this->im, 'composer', false, '_7');
 
-        $this->assertTrue(file_exists($this->vendorDir.'/composer/autoload_classmap.php'), "ClassMap file needs to be generated.");
+        $this->assertFileExists($this->vendorDir.'/composer/autoload_classmap.php', "ClassMap file needs to be generated.");
         $this->assertEquals(
             array(
                 'ClassMapBar' => $this->vendorDir.'/b/b/ClassMapBar.php',
@@ -814,9 +814,9 @@ return array(
 EOF;
 
         $this->generator->dump($this->config, $this->repository, $mainPackage, $this->im, 'composer', true, '_9');
-        $this->assertEquals($expectedNamespace, file_get_contents($this->vendorDir.'/composer/autoload_namespaces.php'));
-        $this->assertEquals($expectedPsr4, file_get_contents($this->vendorDir.'/composer/autoload_psr4.php'));
-        $this->assertEquals($expectedClassmap, file_get_contents($this->vendorDir.'/composer/autoload_classmap.php'));
+        $this->assertStringEqualsFile($this->vendorDir.'/composer/autoload_namespaces.php', $expectedNamespace);
+        $this->assertStringEqualsFile($this->vendorDir.'/composer/autoload_psr4.php', $expectedPsr4);
+        $this->assertStringEqualsFile($this->vendorDir.'/composer/autoload_classmap.php', $expectedClassmap);
     }
 
     public function testIncludePathFileGeneration()
@@ -930,7 +930,7 @@ EOF;
 
         $this->generator->dump($this->config, $this->repository, $package, $this->im, "composer", false, '_12');
 
-        $this->assertFalse(file_exists($this->vendorDir."/composer/include_paths.php"));
+        $this->assertFileNotExists($this->vendorDir."/composer/include_paths.php");
     }
 
     public function testPreAndPostEventsAreDispatchedDuringAutoloadDump()
@@ -1080,9 +1080,9 @@ return array(
 
 EOF;
 
-        $this->assertEquals($expectedNamespace, file_get_contents($vendorDir.'/composer/autoload_namespaces.php'));
-        $this->assertEquals($expectedPsr4, file_get_contents($vendorDir.'/composer/autoload_psr4.php'));
-        $this->assertEquals($expectedClassmap, file_get_contents($vendorDir.'/composer/autoload_classmap.php'));
+        $this->assertStringEqualsFile($vendorDir.'/composer/autoload_namespaces.php', $expectedNamespace);
+        $this->assertStringEqualsFile($vendorDir.'/composer/autoload_psr4.php', $expectedPsr4);
+        $this->assertStringEqualsFile($vendorDir.'/composer/autoload_classmap.php', $expectedClassmap);
         $this->assertContains("\$vendorDir . '/b/b/bootstrap.php',\n", file_get_contents($vendorDir.'/composer/autoload_files.php'));
         $this->assertContains("\$baseDir . '/test.php',\n", file_get_contents($vendorDir.'/composer/autoload_files.php'));
     }
@@ -1158,9 +1158,9 @@ return array(
 
 EOF;
 
-        $this->assertEquals($expectedNamespace, file_get_contents($this->vendorDir.'/composer/autoload_namespaces.php'));
-        $this->assertEquals($expectedPsr4, file_get_contents($this->vendorDir.'/composer/autoload_psr4.php'));
-        $this->assertEquals($expectedClassmap, file_get_contents($this->vendorDir.'/composer/autoload_classmap.php'));
+        $this->assertStringEqualsFile($this->vendorDir.'/composer/autoload_namespaces.php', $expectedNamespace);
+        $this->assertStringEqualsFile($this->vendorDir.'/composer/autoload_psr4.php', $expectedPsr4);
+        $this->assertStringEqualsFile($this->vendorDir.'/composer/autoload_classmap.php', $expectedClassmap);
         $this->assertContains("\$baseDir . '/../test.php',\n", file_get_contents($this->vendorDir.'/composer/autoload_files.php'));
     }
 
@@ -1226,9 +1226,9 @@ return array(
 
 EOF;
 
-        $this->assertEquals($expectedNamespace, file_get_contents($this->vendorDir.'/composer/autoload_namespaces.php'));
-        $this->assertEquals($expectedPsr4, file_get_contents($this->vendorDir.'/composer/autoload_psr4.php'));
-        $this->assertEquals($expectedClassmap, file_get_contents($this->vendorDir.'/composer/autoload_classmap.php'));
+        $this->assertStringEqualsFile($this->vendorDir.'/composer/autoload_namespaces.php', $expectedNamespace);
+        $this->assertStringEqualsFile($this->vendorDir.'/composer/autoload_psr4.php', $expectedPsr4);
+        $this->assertStringEqualsFile($this->vendorDir.'/composer/autoload_classmap.php', $expectedClassmap);
     }
 
     public function testVendorSubstringPath()
@@ -1274,8 +1274,8 @@ return array(
 EOF;
 
         $this->generator->dump($this->config, $this->repository, $package, $this->im, 'composer', false, 'VendorSubstring');
-        $this->assertEquals($expectedNamespace, file_get_contents($this->vendorDir.'/composer/autoload_namespaces.php'));
-        $this->assertEquals($expectedPsr4, file_get_contents($this->vendorDir.'/composer/autoload_psr4.php'));
+        $this->assertStringEqualsFile($this->vendorDir.'/composer/autoload_namespaces.php', $expectedNamespace);
+        $this->assertStringEqualsFile($this->vendorDir.'/composer/autoload_psr4.php', $expectedPsr4);
     }
 
     public function testExcludeFromClassmap()

@@ -17,10 +17,12 @@ use Composer\DependencyResolver\Rule;
 use Composer\DependencyResolver\RuleSet;
 use Composer\DependencyResolver\RuleSetIterator;
 use Composer\DependencyResolver\Pool;
+use PHPUnit\Framework\TestCase;
 
-class RuleSetIteratorTest extends \PHPUnit_Framework_TestCase
+class RuleSetIteratorTest extends TestCase
 {
     protected $rules;
+    protected $pool;
 
     protected function setUp()
     {

@@ -15,8 +15,9 @@ namespace Composer\Test\Package\Dumper;
 use Composer\Package\Dumper\ArrayDumper;
 use Composer\Package\Link;
 use Composer\Semver\Constraint\Constraint;
+use PHPUnit\Framework\TestCase;
 
-class ArrayDumperTest extends \PHPUnit_Framework_TestCase
+class ArrayDumperTest extends TestCase
 {
     /**
      * @var ArrayDumper
@@ -73,7 +74,7 @@ class ArrayDumperTest extends \PHPUnit_Framework_TestCase
 
         $config = $this->dumper->dump($this->package);
 
-        $this->assertSame(true, $config['abandoned']);
+        $this->assertTrue($config['abandoned']);
     }
 
     public function testDumpAbandonedReplacement()

@@ -168,7 +168,7 @@ class FilesystemTest extends TestCase
 
         $fs = new Filesystem;
         $this->assertTrue($fs->removeDirectoryPhp($this->workingDir));
-        $this->assertFalse(file_exists($this->workingDir . "/level1/level2/hello.txt"));
+        $this->assertFileNotExists($this->workingDir . "/level1/level2/hello.txt");
     }
 
     public function testFileSize()
@@ -247,7 +247,7 @@ class FilesystemTest extends TestCase
         $fs = new Filesystem();
         $result = $fs->unlink($symlinked);
         $this->assertTrue($result);
-        $this->assertFalse(file_exists($symlinked));
+        $this->assertFileNotExists($symlinked);
     }
 
     /**
@@ -279,8 +279,8 @@ class FilesystemTest extends TestCase
 
         $result = $fs->removeDirectory($symlinkedTrailingSlash);
         $this->assertTrue($result);
-        $this->assertFalse(file_exists($symlinkedTrailingSlash));
-        $this->assertFalse(file_exists($symlinked));
+        $this->assertFileNotExists($symlinkedTrailingSlash);
+        $this->assertFileNotExists($symlinked);
     }
 
     public function testJunctions()
@@ -324,7 +324,7 @@ class FilesystemTest extends TestCase
         $fs = new Filesystem();
 
         $result1 = $fs->copy($this->workingDir . '/foo', $this->workingDir . '/foop');
-        $this->assertTrue($result1,'Copying directory failed.');
+        $this->assertTrue($result1, 'Copying directory failed.');
         $this->assertTrue(is_dir($this->workingDir . '/foop'), 'Not a directory: ' . $this->workingDir . '/foop');
         $this->assertTrue(is_dir($this->workingDir . '/foop/bar'), 'Not a directory: ' . $this->workingDir . '/foop/bar');
         $this->assertTrue(is_dir($this->workingDir . '/foop/baz'), 'Not a directory: ' . $this->workingDir . '/foop/baz');

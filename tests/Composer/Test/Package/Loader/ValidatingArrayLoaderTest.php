@@ -14,8 +14,9 @@ namespace Composer\Test\Package\Loader;
 
 use Composer\Package\Loader\ValidatingArrayLoader;
 use Composer\Package\Loader\InvalidPackageException;
+use PHPUnit\Framework\TestCase;
 
-class ValidatingArrayLoaderTest extends \PHPUnit_Framework_TestCase
+class ValidatingArrayLoaderTest extends TestCase
 {
     /**
      * @dataProvider successProvider
@@ -150,10 +151,16 @@ class ValidatingArrayLoaderTest extends \PHPUnit_Framework_TestCase
                     'transport-options' => array('ssl' => array('local_cert' => '/opt/certs/test.pem')),
                 ),
             ),
-            array( // test as array
+            array( // test licenses as array
                 array(
                     'name' => 'foo/bar',
                     'license' => array('MIT', 'WTFPL'),
+                ),
+            ),
+            array( // test bin as string
+                array(
+                    'name' => 'foo/bar',
+                    'bin' => 'bin1',
                 ),
             ),
         );

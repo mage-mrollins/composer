@@ -55,8 +55,8 @@ final class StreamContextFactory
         }
 
         // Remove proxy if URL matches no_proxy directive
-        if (!empty($_SERVER['no_proxy']) && parse_url($url, PHP_URL_HOST)) {
-            $pattern = new NoProxyPattern($_SERVER['no_proxy']);
+        if (!empty($_SERVER['NO_PROXY']) || !empty($_SERVER['no_proxy']) && parse_url($url, PHP_URL_HOST)) {
+            $pattern = new NoProxyPattern(!empty($_SERVER['no_proxy']) ? $_SERVER['no_proxy'] : $_SERVER['NO_PROXY']);
             if ($pattern->test($url)) {
                 unset($proxy);
             }
@@ -169,7 +169,7 @@ final class StreamContextFactory
             $header = explode("\r\n", $header);
         }
         uasort($header, function ($el) {
-            return preg_match('{^content-type}i', $el) ? 1 : -1;
+            return stripos($el, 'content-type') === 0 ? 1 : -1;
         });
 
         return $header;

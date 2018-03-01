@@ -229,7 +229,7 @@ class JsonManipulator
         // child exists
         $childRegex = '{'.self::$DEFINES.'(?P<start>"'.preg_quote($name).'"\s*:\s*)(?P<content>(?&json))(?P<end>,?)}x';
         if ($this->pregMatch($childRegex, $children, $matches)) {
-            $children = preg_replace_callback($childRegex, function ($matches) use ($name, $subName, $value, $that) {
+            $children = preg_replace_callback($childRegex, function ($matches) use ($subName, $value, $that) {
                 if ($subName !== null) {
                     $curVal = json_decode($matches['content'], true);
                     if (!is_array($curVal)) {
@@ -417,7 +417,7 @@ class JsonManipulator
     {
         $decoded = JsonFile::parseJson($this->contents);
 
-        if (!isset($decoded[$key])) {
+        if (!array_key_exists($key, $decoded)) {
             return true;
         }
 

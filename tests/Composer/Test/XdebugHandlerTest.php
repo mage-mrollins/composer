@@ -14,6 +14,7 @@ namespace Composer\Test;
 
 use Composer\Test\Mock\XdebugHandlerMock;
 use Composer\Util\IniHelper;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author John Stevenson <john-stevenson@blueyonder.co.uk>
@@ -21,7 +22,7 @@ use Composer\Util\IniHelper;
  * We use PHP_BINARY which only became available in PHP 5.4 *
  * @requires PHP 5.4
  */
-class XdebugHandlerTest extends \PHPUnit_Framework_TestCase
+class XdebugHandlerTest extends TestCase
 {
     public static $env = array();
 
@@ -127,7 +128,7 @@ class XdebugHandlerTest extends \PHPUnit_Framework_TestCase
 
         $xdebug = new XdebugHandlerMock($loaded);
         $xdebug->check();
-        $this->assertEquals(false, getenv(XdebugHandlerMock::ENV_VERSION));
+        $this->assertFalse(getenv(XdebugHandlerMock::ENV_VERSION));
     }
 
     public function testEnvVersionWhenRestartFails()
@@ -140,7 +141,7 @@ class XdebugHandlerTest extends \PHPUnit_Framework_TestCase
         // Mimic failed restart
         $xdebug = new XdebugHandlerMock($loaded);
         $xdebug->check();
-        $this->assertEquals(false, getenv(XdebugHandlerMock::ENV_VERSION));
+        $this->assertFalse(getenv(XdebugHandlerMock::ENV_VERSION));
     }
 
     public static function setUpBeforeClass()

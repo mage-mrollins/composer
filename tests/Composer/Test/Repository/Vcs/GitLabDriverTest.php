@@ -38,6 +38,7 @@ class GitLabDriverTest extends TestCase
                 'home' => $this->home,
                 'gitlab-domains' => array(
                     'mycompany.com/gitlab',
+                    'gitlab.mycompany.com',
                     'othercompany.com/nested/gitlab',
                     'gitlab.com',
                 ),
@@ -142,13 +143,13 @@ JSON;
         return $driver;
     }
 
-        /**
-         * @dataProvider getInitializeUrls
-         */
-        public function testInitializePublicProjectAsAnonymous($url, $apiUrl)
-        {
-            // @link http://doc.gitlab.com/ce/api/projects.html#get-single-project
-            $projectData = <<<JSON
+    /**
+     * @dataProvider getInitializeUrls
+     */
+    public function testInitializePublicProjectAsAnonymous($url, $apiUrl)
+    {
+        // @link http://doc.gitlab.com/ce/api/projects.html#get-single-project
+        $projectData = <<<JSON
 {
     "id": 17,
     "default_branch": "mymaster",
@@ -178,6 +179,45 @@ JSON;
         $this->assertEquals('https://gitlab.com/mygroup/myproject', $driver->getUrl());
 
         return $driver;
+    }
+
+    /**
+     * Also support repositories over HTTP (TLS) and has a port number.
+     *
+     * @group gitlabHttpPort
+     */
+    public function testInitializeWithPortNumber()
+    {
+        $domain = 'gitlab.mycompany.com';
+        $port = '5443';
+        $namespace = 'mygroup/myproject';
+        $url = sprintf('https://%1$s:%2$s/%3$s', $domain, $port, $namespace);
+        $apiUrl = sprintf('https://%1$s:%2$s/api/v4/projects/%3$s', $domain, $port, urlencode($namespace));
+
+        // An incomplete single project API response payload.
+        // @link http://doc.gitlab.com/ce/api/projects.html#get-single-project
+        $projectData = <<<'JSON'
+{
+    "default_branch": "1.0.x",
+    "http_url_to_repo": "https://%1$s:%2$s/%3$s.git",
+    "path": "myproject",
+    "path_with_namespace": "%3$s",
+    "web_url": "https://%1$s:%2$s/%3$s"
+}
+JSON;
+
+        $this->remoteFilesystem
+            ->getContents($domain, $apiUrl, false, array())
+            ->willReturn(sprintf($projectData, $domain, $port, $namespace))
+            ->shouldBeCalledTimes(1);
+
+        $driver = new GitLabDriver(array('url' => $url), $this->io->reveal(), $this->config, $this->process->reveal(), $this->remoteFilesystem->reveal());
+        $driver->initialize();
+
+        $this->assertEquals($apiUrl, $driver->getApiUrl(), 'API URL is derived from the repository URL');
+        $this->assertEquals('1.0.x', $driver->getRootIdentifier(), 'Root identifier is the default branch in GitLab');
+        $this->assertEquals($url.'.git', $driver->getRepositoryUrl(), 'The repository URL is the SSH one by default');
+        $this->assertEquals($url, $driver->getUrl());
     }
 
     public function testGetDist()
@@ -268,7 +308,8 @@ JSON;
         $this->assertEquals($expected, $driver->getTags(), 'Tags are cached');
     }
 
-    public function testGetPaginatedRefs() {
+    public function testGetPaginatedRefs()
+    {
         $driver = $this->testInitialize('https://gitlab.com/mygroup/myproject', 'https://gitlab.com/api/v4/projects/mygroup%2Fmyproject');
 
         $apiUrl = 'https://gitlab.com/api/v4/projects/mygroup%2Fmyproject/repository/branches?per_page=100';
@@ -279,15 +320,15 @@ JSON;
                "name" => "mymaster",
                 "commit" => array(
                     "id" => "97eda36b5c1dd953a3792865c222d4e85e5f302e",
-                    "committed_date" => "2013-01-03T21:04:07.000+01:00"
-                )
+                    "committed_date" => "2013-01-03T21:04:07.000+01:00",
+                ),
             ),
             array(
                 "name" => "staging",
                 "commit" => array(
                     "id" => "502cffe49f136443f2059803f2e7192d1ac066cd",
-                    "committed_date" => "2013-03-09T16:35:23.000+01:00"
-                )
+                    "committed_date" => "2013-03-09T16:35:23.000+01:00",
+                ),
             ),
         );
 
@@ -296,8 +337,8 @@ JSON;
                 "name" => "stagingdupe",
                 "commit" => array(
                     "id" => "502cffe49f136443f2059803f2e7192d1ac066cd",
-                    "committed_date" => "2013-03-09T16:35:23.000+01:00"
-                )
+                    "committed_date" => "2013-03-09T16:35:23.000+01:00",
+                ),
             );
         }
 
@@ -309,7 +350,7 @@ JSON;
             ->shouldBeCalledTimes(1)
         ;
 
-         $this->remoteFilesystem
+        $this->remoteFilesystem
             ->getContents('gitlab.com', "http://gitlab.com/api/v4/projects/mygroup%2Fmyproject/repository/tags?id=mygroup%2Fmyproject&page=2&per_page=20", false, array())
             ->willReturn($branchData)
             ->shouldBeCalledTimes(1)
@@ -332,8 +373,8 @@ JSON;
 
         $this->assertEquals($expected, $driver->getBranches());
         $this->assertEquals($expected, $driver->getBranches(), 'Branches are cached');
-
     }
+
     public function testGetBranches()
     {
         $driver = $this->testInitialize('https://gitlab.com/mygroup/myproject', 'https://gitlab.com/api/v4/projects/mygroup%2Fmyproject');
@@ -380,6 +421,7 @@ JSON;
     }
 
     /**
+     * @group gitlabHttpPort
      * @dataProvider dataForTestSupports
      */
     public function testSupports($url, $expected)
@@ -391,10 +433,14 @@ JSON;
     {
         return array(
             array('http://gitlab.com/foo/bar', true),
+            array('http://gitlab.mycompany.com:5443/foo/bar', true),
             array('http://gitlab.com/foo/bar/', true),
+            array('http://gitlab.com/foo/bar/', true),
+            array('http://gitlab.com/foo/bar.git', true),
             array('http://gitlab.com/foo/bar.git', true),
             array('http://gitlab.com/foo/bar.baz.git', true),
             array('https://gitlab.com/foo/bar', extension_loaded('openssl')), // Platform requirement
+            array('https://gitlab.mycompany.com:5443/foo/bar', extension_loaded('openssl')), // Platform requirement
             array('git@gitlab.com:foo/bar.git', extension_loaded('openssl')),
             array('git@example.com:foo/bar.git', false),
             array('http://example.com/foo/bar', false),

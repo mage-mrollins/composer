@@ -76,7 +76,7 @@ class SolverTest extends TestCase
             $this->fail('Unsolvable conflict did not result in exception.');
         } catch (SolverProblemsException $e) {
             $problems = $e->getProblems();
-            $this->assertEquals(1, count($problems));
+            $this->assertCount(1, $problems);
             $this->assertEquals(2, $e->getCode());
             $this->assertEquals("\n    - The requested package b could not be found in any version, there may be a typo in the package name.", $problems[0]->getPrettyString());
         }
@@ -671,7 +671,7 @@ class SolverTest extends TestCase
             $this->fail('Unsolvable conflict did not result in exception.');
         } catch (SolverProblemsException $e) {
             $problems = $e->getProblems();
-            $this->assertEquals(1, count($problems));
+            $this->assertCount(1, $problems);
 
             $msg = "\n";
             $msg .= "  Problem 1\n";
@@ -700,7 +700,7 @@ class SolverTest extends TestCase
             $this->fail('Unsolvable conflict did not result in exception.');
         } catch (SolverProblemsException $e) {
             $problems = $e->getProblems();
-            $this->assertEquals(1, count($problems));
+            $this->assertCount(1, $problems);
             // TODO assert problem properties
 
             $msg = "\n";
@@ -710,7 +710,8 @@ class SolverTest extends TestCase
             $msg .= "Potential causes:\n";
             $msg .= " - A typo in the package name\n";
             $msg .= " - The package is not available in a stable-enough version according to your minimum-stability setting\n";
-            $msg .= "   see <https://getcomposer.org/doc/04-schema.md#minimum-stability> for more details.\n\n";
+            $msg .= "   see <https://getcomposer.org/doc/04-schema.md#minimum-stability> for more details.\n";
+            $msg .= " - It's a private package and you forgot to add a custom repository to find it\n\n";
             $msg .= "Read <https://getcomposer.org/doc/articles/troubleshooting.md> for further common problems.";
             $this->assertEquals($msg, $e->getMessage());
         }
@@ -746,7 +747,7 @@ class SolverTest extends TestCase
             $this->fail('Unsolvable conflict did not result in exception.');
         } catch (SolverProblemsException $e) {
             $problems = $e->getProblems();
-            $this->assertEquals(1, count($problems));
+            $this->assertCount(1, $problems);
 
             $msg = "\n";
             $msg .= "  Problem 1\n";

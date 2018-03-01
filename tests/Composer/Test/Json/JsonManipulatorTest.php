@@ -13,8 +13,9 @@
 namespace Composer\Test\Json;
 
 use Composer\Json\JsonManipulator;
+use PHPUnit\Framework\TestCase;
 
-class JsonManipulatorTest extends \PHPUnit_Framework_TestCase
+class JsonManipulatorTest extends TestCase
 {
     /**
      * @dataProvider linkProvider
@@ -109,7 +110,6 @@ class JsonManipulatorTest extends \PHPUnit_Framework_TestCase
 }
 ',
             ),
-
 
             array(
                 '{
@@ -2310,6 +2310,22 @@ class JsonManipulatorTest extends \PHPUnit_Framework_TestCase
 ', $manipulator->getContents());
     }
 
+    public function testRemoveMainKeyRemovesKeyWhereValueIsNull()
+    {
+        $manipulator = new JsonManipulator(json_encode(array(
+            'foo' => 9000,
+            'bar' => null,
+        )));
+
+        $manipulator->removeMainKey('bar');
+
+        $expected = json_encode(array(
+            'foo' => 9000,
+        ));
+
+        $this->assertJsonStringEqualsJsonString($expected, $manipulator->getContents());
+    }
+
     public function testIndentDetection()
     {
         $manipulator = new JsonManipulator('{
@@ -2359,6 +2375,5 @@ class JsonManipulatorTest extends \PHPUnit_Framework_TestCase
     }
 }
 ', $manipulator->getContents());
-
     }
 }

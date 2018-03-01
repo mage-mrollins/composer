@@ -13,14 +13,16 @@
 namespace Composer\Test\Util;
 
 use Composer\Util\Perforce;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author Matt Whittom <Matt.Whittom@veteransunited.com>
  */
-class PerforceTest extends \PHPUnit_Framework_TestCase
+class PerforceTest extends TestCase
 {
     protected $perforce;
     protected $processExecutor;
+    protected $repoConfig;
     protected $io;
 
     const TEST_DEPOT = 'depot';
@@ -223,7 +225,7 @@ class PerforceTest extends \PHPUnit_Framework_TestCase
             'p4user' => 'user',
             'p4password' => 'TEST_PASSWORD',
         );
-        $this->perforce = new Perforce($repoConfig, 'port', 'path', $this->processExecutor, false, $this->getMockIOInterface(), 'TEST');
+        $this->perforce = new Perforce($repoConfig, 'port', 'path', $this->processExecutor, false, $this->getMockIOInterface());
         $password = $this->perforce->queryP4Password();
         $this->assertEquals('TEST_PASSWORD', $password);
     }
@@ -288,7 +290,7 @@ class PerforceTest extends \PHPUnit_Framework_TestCase
                 $this->assertStringStartsWith($expected, fgets($stream));
             }
             $this->assertFalse(fgets($stream));
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             fclose($stream);
             throw $e;
         }
@@ -309,7 +311,7 @@ class PerforceTest extends \PHPUnit_Framework_TestCase
                 $this->assertStringStartsWith($expected, fgets($stream));
             }
             $this->assertFalse(fgets($stream));
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             fclose($stream);
             throw $e;
         }

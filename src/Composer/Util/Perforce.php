@@ -117,6 +117,7 @@ class Perforce
     protected function executeCommand($command)
     {
         $this->commandResult = '';
+
         return $this->process->execute($command, $this->commandResult);
     }
 
@@ -242,13 +243,13 @@ class Perforce
             }
 
             return null;
-        } else {
-            $command = 'echo $' . $name;
-            $this->executeCommand($command);
-            $result = trim($this->commandResult);
-
-            return $result;
         }
+
+        $command = 'echo $' . $name;
+        $this->executeCommand($command);
+        $result = trim($this->commandResult);
+
+        return $result;
     }
 
     public function queryP4Password()
@@ -425,20 +426,20 @@ class Perforce
             $path = $identifier. '/' . $file;
 
             return $path;
-        } else {
-            $path = substr($identifier, 0, $index) . '/' . $file . substr($identifier, $index);
-            $command = $this->generateP4Command(' files ' . $path, false);
-            $this->executeCommand($command);
-            $result = $this->commandResult;
-            $index2 = strpos($result, 'no such file(s).');
-            if ($index2 === false) {
-                $index3 = strpos($result, 'change');
-                if ($index3 !== false) {
-                    $phrase = trim(substr($result, $index3));
-                    $fields = explode(' ', $phrase);
+        }
 
-                    return substr($identifier, 0, $index) . '/' . $file . '@' . $fields[1];
-                }
+        $path = substr($identifier, 0, $index) . '/' . $file . substr($identifier, $index);
+        $command = $this->generateP4Command(' files ' . $path, false);
+        $this->executeCommand($command);
+        $result = $this->commandResult;
+        $index2 = strpos($result, 'no such file(s).');
+        if ($index2 === false) {
+            $index3 = strpos($result, 'change');
+            if ($index3 !== false) {
+                $phrase = trim(substr($result, $index3));
+                $fields = explode(' ', $phrase);
+
+                return substr($identifier, 0, $index) . '/' . $file . '@' . $fields[1];
             }
         }
 

@@ -16,9 +16,12 @@ use Composer\Installer\InstallationManager;
 use Composer\DependencyResolver\Operation\InstallOperation;
 use Composer\DependencyResolver\Operation\UpdateOperation;
 use Composer\DependencyResolver\Operation\UninstallOperation;
+use PHPUnit\Framework\TestCase;
 
-class InstallationManagerTest extends \PHPUnit_Framework_TestCase
+class InstallationManagerTest extends TestCase
 {
+    protected $repository;
+
     public function setUp()
     {
         $this->repository = $this->getMock('Composer\Repository\InstalledRepositoryInterface');

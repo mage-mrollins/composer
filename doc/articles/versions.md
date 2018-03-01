@@ -74,7 +74,7 @@ correct location in your `vendor` directory.
 
 ### Branches
 
-If you want Composer to check out a branch instead of a tag, you need to point it to the branch using the special `dev-*` prefix (or sometimes suffix; see below). If you're checking out a branch, it's assumed that you want to *work* on the branch and Composer actually clones the repo into the correct place in your `vendor` directory. For tags, it just copies the right files without actually cloning the repo. (You can modify this behavior with --prefer-source and --prefer-dist, see [install options](../03-cli.md#install).) 
+If you want Composer to check out a branch instead of a tag, you need to point it to the branch using the special `dev-*` prefix (or sometimes suffix; see below). If you're checking out a branch, it's assumed that you want to *work* on the branch and Composer actually clones the repo into the correct place in your `vendor` directory. For tags, it just copies the right files without actually cloning the repo. (You can modify this behavior with --prefer-source and --prefer-dist, see [install options](../03-cli.md#install).)
 
 In the above example, if you wanted to check out the `my-feature` branch, you would specify `dev-my-feature` as the version constraint in your `require` clause. This would result in Composer cloning the `my-library` repository into my `vendor` directory and checking out the `my-feature` branch.
 
@@ -140,7 +140,7 @@ Example: `1.0.*`
 The `~` operator is best explained by example: `~1.2` is equivalent to
 `>=1.2 <2.0.0`, while `~1.2.3` is equivalent to `>=1.2.3 <1.3.0`. As you can see
 it is mostly useful for projects respecting [semantic
-versioning](http://semver.org/). A common usage would be to mark the minimum
+versioning](https://semver.org/). A common usage would be to mark the minimum
 minor version you depend on, like `~1.2` (which allows anything up to, but not
 including, 2.0). Since in theory there should be no backwards compatibility
 breaks until 2.0, that works well. Another way of looking at it is that using
@@ -201,7 +201,7 @@ setting. All available stability flags are listed on the minimum-stability
 section of the [schema page](../04-schema.md#minimum-stability).
 
 ## Summary
-```
+```json
 "require": {
     "vendor/package": "1.3.2", // exactly 1.3.2
 

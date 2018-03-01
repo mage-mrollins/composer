@@ -238,7 +238,7 @@ class Factory
     public static function createOutput()
     {
         $styles = self::createAdditionalStyles();
-        $formatter = new OutputFormatter(null, $styles);
+        $formatter = new OutputFormatter(false, $styles);
 
         return new ConsoleOutput(ConsoleOutput::VERBOSITY_NORMAL, null, $formatter);
     }
@@ -546,7 +546,7 @@ class Factory
         $im->addInstaller(new Installer\LibraryInstaller($io, $composer, null));
         $im->addInstaller(new Installer\PearInstaller($io, $composer, 'pear-library'));
         $im->addInstaller(new Installer\PluginInstaller($io, $composer));
-        $im->addInstaller(new Installer\MetapackageInstaller($io));
+        $im->addInstaller(new Installer\MetapackageInstaller());
     }
 
     /**

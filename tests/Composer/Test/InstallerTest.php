@@ -224,7 +224,8 @@ class InstallerTest extends TestCase
                 ->setUpdate(true)
                 ->setDryRun($input->getOption('dry-run'))
                 ->setUpdateWhitelist($input->getArgument('packages'))
-                ->setWhitelistDependencies($input->getOption('with-dependencies'))
+                ->setWhitelistTransitiveDependencies($input->getOption('with-dependencies'))
+                ->setWhitelistAllDependencies($input->getOption('with-all-dependencies'))
                 ->setPreferStable($input->getOption('prefer-stable'))
                 ->setPreferLowest($input->getOption('prefer-lowest'))
                 ->setIgnorePlatformRequirements($input->getOption('ignore-platform-reqs'));
@@ -238,7 +239,9 @@ class InstallerTest extends TestCase
 
         $application->setAutoExit(false);
         $appOutput = fopen('php://memory', 'w+');
-        $result = $application->run(new StringInput($run), new StreamOutput($appOutput));
+        $input = new StringInput($run);
+        $input->setInteractive(false);
+        $result = $application->run($input, new StreamOutput($appOutput));
         fseek($appOutput, 0);
 
         // Shouldn't check output and results if an exception was expected by this point
